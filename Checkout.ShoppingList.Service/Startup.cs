@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Checkout.ShoppingList.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Checkout.ShoppingList.Service
 {
@@ -28,7 +30,11 @@ namespace Checkout.ShoppingList.Service
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddDbContext<ApplicationContext>(opt => opt.UseInMemoryDatabase());
+
             services.AddMvc();
+
+            services.AddScoped<IShoppingListRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
