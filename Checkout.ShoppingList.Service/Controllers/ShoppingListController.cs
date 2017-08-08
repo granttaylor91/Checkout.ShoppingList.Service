@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Checkout.ShoppingList.Data;
 using Checkout.ShoppingList.Data.Model;
 using Checkout.ShoppingList.Service.Attributes;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -48,9 +49,16 @@ namespace Checkout.ShoppingList.Service.Controllers
         [ModelValidation]
         public ObjectResult Post([FromBody]DrinkOrder drinkOrder)
         {
-            _shoppingListRepository.Insert(drinkOrder);
+            var result = _shoppingListRepository.Insert(drinkOrder);
+            if(result == null)
+            {
+                var objectResult = new ObjectResult($"Drink {drinkOrder.Name} already exists in the shopping list.");
+                objectResult.StatusCode = (int)HttpStatusCode.Conflict;
+                return objectResult;
+            }
 
-            string returnedUri = string.Format("{0} {1}", this.HttpContext.Request, this.HttpContext.Request.Path);
+            string returnedUri =  string.Format("{0}://{1}{2}/{3}", 
+                this.HttpContext.Request.Scheme, this.HttpContext.Request.Host, this.Request.Path, drinkOrder.Name);
 
             return Created(returnedUri, drinkOrder);
         }
@@ -71,7 +79,7 @@ namespace Checkout.ShoppingList.Service.Controllers
             return new OkObjectResult(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public ObjectResult Delete(string name)
         {
             _shoppingListRepository.Delete(name);

@@ -96,42 +96,6 @@ namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListContro
             }
         }
 
-        [TestMethod]
-        public void Put_Model_Error_Returns_Invalid()
-        {
-            DbContextOptions<ShoppingListContext> options = new TestHelper().GetShoppingListContextOptions();
-
-            var mockData = MockData.LargeShoppingList();
-
-            using (var context = new ShoppingListContext(options))
-            {
-                context.AddRange(mockData);
-                context.SaveChanges();
-            };
-
-            var expectedObject = new DrinkOrder
-            {
-                Name = "Pepsi",
-                Quantity = -1
-            };
-
-            using (var context = new ShoppingListContext(options))
-            {
-                IShoppingListRepository mockRepo = new ShoppingListRepository(context);
-
-                var controller = new ShoppingListController(mockRepo);
-                controller.ModelState.AddModelError("Test", "Error");
-                var expectedErrorResult = new List<string> { "Error" };
-
-                //Act
-                var result = controller.Put(expectedObject);
-
-                //Assert
-                Assert.IsNotNull(result);
-                Assert.AreEqual(400, result.StatusCode);
-                CollectionAssert.AreEqual(result.Value as List<string>, expectedErrorResult);
-            }
-        }
     }
 }
 

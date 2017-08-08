@@ -38,10 +38,21 @@ namespace Checkout.ShoppingList.Data
             return result;
         }
 
-        public void Insert(DrinkOrder entity)
+        /// <summary>
+        /// If entity already exists, return nothing. Otherwise return the inserted entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public DrinkOrder Insert(DrinkOrder entity)
         {
+            DrinkOrder drinkOrder = _context.shoppingList.AsNoTracking().FirstOrDefault(x => x.Name == entity.Name);
+            if (drinkOrder != null)
+            {
+                return null;
+            }
             _context.shoppingList.Add(entity);
             _context.SaveChanges();
+            return entity;
         }
 
         public DrinkOrder Update(DrinkOrder entity)

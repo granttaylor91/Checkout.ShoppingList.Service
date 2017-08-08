@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Checkout.ShoppingList.Data;
 using Microsoft.EntityFrameworkCore;
 using Checkout.ShoppingList.Data.Model;
+using Checkout.ShoppingList.Service.Attributes;
 
 namespace Checkout.ShoppingList.Service
 {
@@ -33,26 +34,28 @@ namespace Checkout.ShoppingList.Service
             // Add framework services.
             services.AddDbContext<ShoppingListContext>(opt => opt.UseInMemoryDatabase());
 
-            services.AddSingleton<IShoppingListRepository, ShoppingListRepository>();
-            services.AddMvc();
+            services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
+            services.AddMvc(config => {
+                config.Filters.Add(new CustomExceptionFilterAttribute());
+         
+            });
 
-        }
-
-
-        private static void AddTestData(ShoppingListContext context)
-        {
-
-            var drinkOrders = new List<DrinkOrder>
+            services.AddSwaggerGen(c =>
             {
-                new DrinkOrder { Name="Pepsi", Quantity= 2},
-                new DrinkOrder { Name="Coca Cola", Quantity= 1},
-                new DrinkOrder { Name="Milk", Quantity = 5}
-            };
-          
-            context.shoppingList.AddRange(drinkOrders);
-            context.SaveChanges();
-
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
+                {
+                    Title = "Drinks Shoppinglist Service",
+                    Version = "v1",
+                    Description = "Very basic API for Checkout.com Technical Assignment",
+                    Contact = new Swashbuckle.AspNetCore.Swagger.Contact
+                    {
+                        Name = "Grant Taylor",
+                        Email = "GrantTaylor91@gmail.com"
+                    }
+                });
+            });
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -60,11 +63,14 @@ namespace Checkout.ShoppingList.Service
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            var context = app.ApplicationServices.GetService<ShoppingListContext>();
-
-            AddTestData(context);
-
             app.UseMvc();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Drinks Shoppinglist Service v1");
+            });
         }
     }
 }

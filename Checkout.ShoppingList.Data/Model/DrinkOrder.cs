@@ -10,7 +10,7 @@ namespace Checkout.ShoppingList.Data.Model
         [Key]
         public string Name { get; set; }
 
-        [Range(10, Int32.MaxValue, ErrorMessage = "Quantity is out of range")]
+        [Range(0, Int32.MaxValue, ErrorMessage = "Quantity is out of range")]
         public int Quantity { get; set; }
 
 

@@ -10,7 +10,7 @@ namespace Checkout.ShoppingList.Data
 
         DrinkOrder Get(string name);
 
-        void Insert(DrinkOrder entity);
+        DrinkOrder Insert(DrinkOrder entity);
 
         DrinkOrder Update(DrinkOrder entity);
 

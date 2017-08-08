@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListControllerTests
@@ -50,16 +51,20 @@ namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListContro
             }
         }
 
-
         [TestMethod]
-        public void Post_Model_Error_Returns_Invalid()
+        public void Post_Existing_Item_Returns_Conflict()
         {
+            //Arrange
             DbContextOptions<ShoppingListContext> options = new TestHelper().GetShoppingListContextOptions();
 
-            var expectedObject = new DrinkOrder
+            var mockData = MockData.LargeShoppingList();
+          
+            var testObject = mockData.FirstOrDefault();
+
+            using (var context = new ShoppingListContext(options))
             {
-                Name = "Pepsi",
-                Quantity = -1
+                context.AddRange(mockData);
+                context.SaveChanges();
             };
 
             using (var context = new ShoppingListContext(options))
@@ -67,18 +72,17 @@ namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListContro
                 IShoppingListRepository mockRepo = new ShoppingListRepository(context);
 
                 var controller = new ShoppingListController(mockRepo);
-                controller.ModelState.AddModelError("Test", "Error");
-                var expectedErrorResult = new List<string> { "Error" };
+                controller.ControllerContext = new ControllerContext();
+                controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
                 //Act
-                var result = controller.Post(expectedObject);
+                var result = controller.Post(testObject);
 
                 //Assert
                 Assert.IsNotNull(result);
-                Assert.AreEqual(400, result.StatusCode);
-                CollectionAssert.AreEqual(result.Value as List<string>, expectedErrorResult);
+                Assert.AreEqual(409, result.StatusCode);
+                Assert.AreEqual(result.Value, $"Drink {testObject.Name} already exists in the shopping list.");
             }
         }
-
     }
 }
