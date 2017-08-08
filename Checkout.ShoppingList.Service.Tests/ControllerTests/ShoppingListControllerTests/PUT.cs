@@ -107,7 +107,6 @@ namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListContro
             {
                 context.AddRange(mockData);
                 context.SaveChanges();
-                context.Dispose();
             };
 
             var expectedObject = new DrinkOrder
@@ -133,8 +132,6 @@ namespace Checkout.ShoppingList.Service.Tests.ControllerTests.ShoppingListContro
                 CollectionAssert.AreEqual(result.Value as List<string>, expectedErrorResult);
             }
         }
-
-
     }
 }
 

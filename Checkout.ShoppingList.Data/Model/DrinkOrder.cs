@@ -14,7 +14,7 @@ namespace Checkout.ShoppingList.Data.Model
         public int Quantity { get; set; }
 
 
-        //Override the equality operators to make for easier testing.
+        //Override the equality operators to test for value equality over ref equality.
         public override bool Equals(object obj)
         {
             if(obj == null || obj.GetType() != GetType())
