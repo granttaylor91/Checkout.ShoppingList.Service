@@ -31,7 +31,7 @@ namespace Checkout.ShoppingList.Service.Controllers
         public ObjectResult Get()
         {
             var result = _shoppingListRepository.GetAll();
-            return new OkObjectResult(result);
+            return new OkObjectResult(Json(result));
         }
 
 
@@ -48,7 +48,7 @@ namespace Checkout.ShoppingList.Service.Controllers
 
             if(result == null)
             {
-                return new NotFoundObjectResult($"Drink: {name} not found on the shopping list.");
+                return new NotFoundObjectResult(Json($"Drink: {name} not found on the shopping list."));
             }
 
             return new OkObjectResult(result);
@@ -73,7 +73,7 @@ namespace Checkout.ShoppingList.Service.Controllers
             var result = _shoppingListRepository.Insert(drinkOrder);
             if(result == null)
             {
-                var objectResult = new ObjectResult($"Drink {drinkOrder.Name} already exists in the shopping list.");
+                var objectResult = new ObjectResult(Json($"Drink {drinkOrder.Name} already exists in the shopping list."));
                 objectResult.StatusCode = (int)HttpStatusCode.Conflict;
                 return objectResult;
             }
@@ -124,7 +124,9 @@ namespace Checkout.ShoppingList.Service.Controllers
         {
             _shoppingListRepository.Delete(name);
 
-            return new OkObjectResult(null);
+            var objectResult = new OkObjectResult(Json("Delete Successful"));
+            objectResult.StatusCode = (int)HttpStatusCode.NoContent;
+            return objectResult;
         }
     }
 }

@@ -39,7 +39,6 @@ namespace Checkout.ShoppingList.Service
             services.AddScoped<IShoppingListRepository, ShoppingListRepository>();
             services.AddMvc(config => {
                 config.Filters.Add(new CustomExceptionFilterAttribute());
-         
             });
 
             services.AddSwaggerGen(c =>
