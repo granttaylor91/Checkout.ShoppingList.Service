@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Checkout.ShoppingList.Data;
 using Microsoft.EntityFrameworkCore;
+using Checkout.ShoppingList.Data.Model;
 
 namespace Checkout.ShoppingList.Service
 {
@@ -30,11 +31,27 @@ namespace Checkout.ShoppingList.Service
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<ApplicationContext>(opt => opt.UseInMemoryDatabase());
-
-            services.AddMvc();
+            services.AddDbContext<ShoppingListContext>(opt => opt.UseInMemoryDatabase());
 
             services.AddSingleton<IShoppingListRepository, ShoppingListRepository>();
+            services.AddMvc();
+
+        }
+
+
+        private static void AddTestData(ShoppingListContext context)
+        {
+
+            var drinkOrders = new List<DrinkOrder>
+            {
+                new DrinkOrder { Name="Pepsi", Quantity= 2},
+                new DrinkOrder { Name="Coca Cola", Quantity= 1},
+                new DrinkOrder { Name="Milk", Quantity = 5}
+            };
+          
+            context.shoppingList.AddRange(drinkOrders);
+            context.SaveChanges();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +59,10 @@ namespace Checkout.ShoppingList.Service
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            var context = app.ApplicationServices.GetService<ShoppingListContext>();
+
+            AddTestData(context);
 
             app.UseMvc();
         }

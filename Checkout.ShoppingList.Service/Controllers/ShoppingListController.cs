@@ -11,7 +11,7 @@ using Checkout.ShoppingList.Data.Model;
 namespace Checkout.ShoppingList.Service.Controllers
 {
     [Route("api/[controller]")]
-    public class ShoppingListController : Controller
+    public class ShoppingListController : BaseController
     {
         private readonly IShoppingListRepository _shoppingListRepository;
 
@@ -23,47 +23,68 @@ namespace Checkout.ShoppingList.Service.Controllers
 
         // GET: api/ShoppingList
         [HttpGet]
-        public async Task<ObjectResult> Get()
+        public ObjectResult Get()
         {
-            _shoppingListRepository.GetAll();
-
-            throw new NotImplementedException();
+            var result = _shoppingListRepository.GetAll();
+            
+            return new OkObjectResult(result);
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public async Task<ObjectResult> Get(string id)
+        
+        [HttpGet("{name}")]
+        public ObjectResult Get(string name)
         {
-            _shoppingListRepository.Get(id);
+            var result = _shoppingListRepository.Get(name);
 
-            throw new NotImplementedException();
+            if(result == null)
+            {
+                return new NotFoundObjectResult($"Drink: {name} not found on the shopping list.");
+            }
+
+            return new OkObjectResult(result);
         }
 
-        // POST api/values
+        //
         [HttpPost]
-        public async Task<ObjectResult> Post([FromBody]DrinkOrder drinkOrder)
+        public ObjectResult Post([FromBody]DrinkOrder drinkOrder)
         {
+            if (!ModelState.IsValid)
+            {
+                return FormattedErrorResponse(ModelState);
+            }
+
             _shoppingListRepository.Insert(drinkOrder);
 
-            throw new NotImplementedException();
+            string returnedUri = string.Format("{0} {1}", this.HttpContext.Request, this.HttpContext.Request.Path);
+
+            return Created(returnedUri, drinkOrder);
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public async Task<ObjectResult> Put([FromBody]DrinkOrder drinkOrder)
+ 
+        [HttpPut]
+        public ObjectResult Put([FromBody]DrinkOrder drinkOrder)
         {
-            _shoppingListRepository.Update(drinkOrder);
-            
-            throw new NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return FormattedErrorResponse(ModelState);
+            }
+
+            var result = _shoppingListRepository.Update(drinkOrder);
+
+            if(result == null)
+            {
+                return new NotFoundObjectResult($"Drink: {drinkOrder.Name} not found on the shopping list.");
+            }
+
+            return new OkObjectResult(result);
         }
 
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public async Task<ObjectResult> Delete([FromBody]DrinkOrder drinkOrder)
+        public ObjectResult Delete(string name)
         {
-            _shoppingListRepository.Delete(drinkOrder);
+            _shoppingListRepository.Delete(name);
 
-            throw new NotImplementedException();
+            return new OkObjectResult(null);
         }
     }
 }

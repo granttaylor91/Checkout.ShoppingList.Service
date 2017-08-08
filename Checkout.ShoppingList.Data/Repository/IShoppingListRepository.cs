@@ -6,13 +6,14 @@ namespace Checkout.ShoppingList.Data
 {
     public interface IShoppingListRepository
     {
+        List<DrinkOrder> GetAll();
 
-        IEnumerable<DrinkOrder> GetAll();
-        DrinkOrder Get(string id);
+        DrinkOrder Get(string name);
+
         void Insert(DrinkOrder entity);
-        void Update(DrinkOrder entity);
-        void Delete(DrinkOrder entity);
 
+        DrinkOrder Update(DrinkOrder entity);
 
+        void Delete(string name);
     }
 }
