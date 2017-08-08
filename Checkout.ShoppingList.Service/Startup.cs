@@ -11,6 +11,8 @@ using Checkout.ShoppingList.Data;
 using Microsoft.EntityFrameworkCore;
 using Checkout.ShoppingList.Data.Model;
 using Checkout.ShoppingList.Service.Attributes;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
 
 namespace Checkout.ShoppingList.Service
 {
@@ -44,15 +46,20 @@ namespace Checkout.ShoppingList.Service
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
                 {
-                    Title = "Drinks Shoppinglist Service",
+                    Title = "Drinks Shopping List Service",
                     Version = "v1",
-                    Description = "Very basic API for Checkout.com Technical Assignment",
+                    Description = "Very basic API for Checkout.com Technical Assignment.",
                     Contact = new Swashbuckle.AspNetCore.Swagger.Contact
                     {
                         Name = "Grant Taylor",
                         Email = "GrantTaylor91@gmail.com"
                     }
                 });
+                //Set the comments path for the swagger json and ui.
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "Checkout.ShoppingList.Service.xml");
+                c.IncludeXmlComments(xmlPath);
+
             });
         }
 

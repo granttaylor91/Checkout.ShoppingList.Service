@@ -23,7 +23,10 @@ namespace Checkout.ShoppingList.Service.Controllers
         }
 
 
-        // GET: api/ShoppingList
+        /// <summary>
+        /// Retrieves all drink orders in the shopping list.
+        /// </summary>
+        /// <response code="200">Returns the entire shopping list.</response>
         [HttpGet]
         public ObjectResult Get()
         {
@@ -31,7 +34,13 @@ namespace Checkout.ShoppingList.Service.Controllers
             return new OkObjectResult(result);
         }
 
-        
+
+        /// <summary>
+        /// Retrieves a single drink order and and it's quantity.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <response code="200">Returns the drink order and it's quantity</response>
+        /// <response code="404">If the drink order cannot be found.</response>
         [HttpGet("{name}")]
         public ObjectResult Get(string name)
         {
@@ -45,6 +54,18 @@ namespace Checkout.ShoppingList.Service.Controllers
             return new OkObjectResult(result);
         }
 
+
+        /// <summary>
+        /// Adds a drink order to the Shopping List.
+        /// </summary>
+        /// <remarks>
+        /// Note: This endpoint will never return a 200 response.
+        /// There is an issue in the generated comments that is adding it by default.
+        /// </remarks>
+        /// <param name="drinkOrder"></param>
+        /// <response code="201">Returns created drink order and location (via header).</response>
+        /// <response code="400">If the order is null or has an invalid quantity.</response>
+        /// <response code="409">If the order already exists in the shopping list.</response>
         [HttpPost]
         [ModelValidation]
         public ObjectResult Post([FromBody]DrinkOrder drinkOrder)
@@ -63,7 +84,16 @@ namespace Checkout.ShoppingList.Service.Controllers
             return Created(returnedUri, drinkOrder);
         }
 
- 
+
+        /// <summary>
+        /// Updates a drink order in the shopping list
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="drinkOrder"></param>
+        /// <response code="200">Returns updated drink order.</response>
+        /// <response code="400">If the drink order is null or has an invalid quantity.</response>
+        /// <response code="404">If the drink order could not be found.</response>
         [HttpPut]
         [ModelValidation]
         public ObjectResult Put([FromBody]DrinkOrder drinkOrder)
@@ -79,7 +109,17 @@ namespace Checkout.ShoppingList.Service.Controllers
             return new OkObjectResult(result);
         }
 
-        [HttpDelete]
+
+        /// <summary>
+        /// Removes a drink order from the shopping list
+        /// </summary>
+        /// <remarks>
+        /// Note: This endpoint will never return a 200 response.
+        /// There is an issue in the generated comments that is adding it by default.
+        /// </remarks>
+        /// <param name="drinkOrder"></param>
+        /// <response code="204">Returns regardless, if the drink order existed and was deleted or did not exist.</response>
+        [HttpDelete("{name}")]
         public ObjectResult Delete(string name)
         {
             _shoppingListRepository.Delete(name);

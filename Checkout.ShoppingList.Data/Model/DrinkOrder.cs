@@ -8,6 +8,7 @@ namespace Checkout.ShoppingList.Data.Model
     public class DrinkOrder
     {
         [Key]
+        [Required]
         public string Name { get; set; }
 
         [Range(0, Int32.MaxValue, ErrorMessage = "Quantity is out of range")]
